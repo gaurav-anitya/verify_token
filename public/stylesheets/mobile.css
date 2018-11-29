@@ -1,0 +1,19 @@
+.main{
+	/* Style for "Background" */
+	background-color: #f01716;
+}
+
+.text-color{
+	color: #ffffff;
+}
+
+.screen-size{
+	height: 100%;
+	position: relative;
+}
+
+.vcenter {
+    position: absolute;
+  top: 40%;
+  left: 15%;
+}
