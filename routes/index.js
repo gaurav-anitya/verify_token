@@ -5,7 +5,7 @@ var visiter=require('./VisiterEntry');
 
 router.get('/', function(req, res){
   //console.log("Hello");
-  res.render('Login', {layout: true});
+  res.render('Login', {layout: false});
   
 });
 

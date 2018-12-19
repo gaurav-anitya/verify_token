@@ -30,3 +30,7 @@ $("#inputPassword").keyup(function(){
   var userName=$("#inputusername").val();
   sessionStorage.setItem("userName", userName);
 });
+
+$("#Logout").click(function(){
+  document.location.href="/";
+});

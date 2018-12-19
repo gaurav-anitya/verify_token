@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+			
+		
+	  <meta charset="utf-8">
+	  <meta name="viewport" content="width=device-width, initial-scale=1">
+	  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	  
+	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	  <link rel="stylesheet" href="/public/stylesheets/mobile.css">
+	  <style>
+		.alert{
+text-align: center;
+color: rgba(126, 13, 13, 0.603)
+
+		}
+	  </style>
+	</head>
+	<body class="main">
+		
+		<div id="info"></div>
+		<div class = "container screen-size vcenter">
+			<form class="form-horizontal " method="POST" action="/login">
+				<div class="form-group">
+				  <label for="inputusername" class="col-xs-2 control-label text-color">User Name</label>
+				  <div class="col-xs-8 col-xs-offset-1 ">
+					<input type="username" class="form-control" name="userId" id="inputusername" placeholder="User Name">
+				  </div>
+				</div>
+				<div class="form-group">
+				  <label for="inputPassword" class="col-xs-2 control-label text-color">Password</label>
+				  <div class="col-xs-offset-1 col-xs-8">
+					<input type="password" class="form-control" name="password" id="inputPassword" placeholder="Password">
+				  </div>
+					
+				</div>
+				{{!-- <div class="alert">{{info}}</div> --}}
+				<div class="form-group">
+				  <div class="col-xs-offset-4 col-xs-10">
+					<button type="submit" class="btn btn-default">Sign in</button>
+				  </div>
+				</div>
+				
+			  </form>
+		</div>
+		<script src="/public/javascripts/verifyToken.js"></script>
+	</body>
+</html>

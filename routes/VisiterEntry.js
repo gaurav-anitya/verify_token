@@ -1,15 +1,19 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser')
 const app = express.Router();
 var sessionstorage = require('sessionstorage');
-var flash = require('connect-flash');
+var session = require('express-session')
+var flash = require('req-flash');
 app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(bodyParser.json());
 app.use(bodyParser());
-app.use(flash());
-
+app.use(cookieParser('keyboard cat'));
+  app.use(session({ cookie: { maxAge: 60000 }}));
+  app.use(flash());
+  
 var mysql = require('mysql');
 var HOST = 'localhost';
 var PORT = 3306;
@@ -36,70 +40,30 @@ con.query("Select * from VisiterRecord", function (err, result) {
 });
 });
 
-// app.post('/submit', function(req, res) {
- 
-// var getId="select * from VisiterRecord where visitor_empid="+req.body.visitor_empid ;
-// con.query(getId,function(err, result,fields)   
-// {     
-//   console.log(req.body.escort_time_from); 
-                                           
-//  if (err)
-//    throw err;
-//   else{ 
-//      if(result.length >0 )
-//      {
-//        if(result[0].dayCount <3)
-//        {
-//       console.log("if");
-//       var updateRecord="update VisiterRecord set dayCount=dayCount+1 where visitor_empid="+req.body.visitor_empid;
-//       con.query(updateRecord,function(err, result)     
-//       {                                                      
-//         if (err)
-//           throw err;
-//           console.log(result);
-          
-//       });
-//        res.render('Status', {layout: true});
-//       }
-//     else{
-//       res.render('SubmitResponse', {layout: true});
-        
-//         }
 
-//    }
-//   else
-//   {
-//       var approvalStatus="pending";
-//       var dayCount=1;
-      
-//       var sql = "Insert into VisiterRecord (visitor_empid,visitor_name,visitor_company,visitor_unit,visitor_smartcard,visitor_access,visitor_assetId,visitor_purpose,escort_empid,escort_name,escort_unit,escort_smartcard,escort_date,escort_time_from,escort_time_to,approvalStatus,dayCount) VALUES ('"+req.body.visitor_empid+"','"+req.body.visitor_name+"','"+req.body.visitor_company+"','"+req.body.visitor_unit+"','"+req.body.visitor_smartcard+"','"+req.body.visitor_access+"','"+req.body.visitor_asset+"','"+req.body.visitor_purpose+"','"+req.body.escort_empid+"','"+req.body.escort_name+"','"+req.body.escort_unit+"','"+req.body.escort_smartcard+"','"+req.body.escort_date+"','"+req.body.escort_time_from+"','"+req.body.escort_time_to+"','"+approvalStatus+"','"+dayCount+"')";
-//       con.query(sql,function(err, result)     
-//       {                                                      
-//         if (err)
-//            throw err;
-           
-//       });
-//       res.render('Status', {layout: true});
-//    }
-// }
-    
+// app.post("/getApprovalToken",function(req, res) {
+// console.log(req.body);
+
+// res.send(approvalToken(req.body.escort_id));
 // });
-
-// });
-
-app.post("/getApprovalToken",function(req, res) {
-console.log(req.body);
-
-res.send(approvalToken(req.body.escort_id));
-});
 
 app.post("/verifyApprovalToken",function(req, res) {
+  var actualToken=req.body.token_key.split("");
+  var resultedToken="";
+  for(var num=1; num < actualToken.length-2; num++ )
+  {
+    
+    resultedToken=resultedToken+actualToken[num].toString();
+  }
 
-  var approverMasking = approvalToken(req.body.token_key);
+  var approverMasking = approvalToken(resultedToken);
   
   console.log(approverMasking);
-  var val=Math.floor(Math.random() * 10);
-  var val1=Math.floor(Math.random() * 10);
+  var timestamp=Math.floor(Date.now() / 1000);
+  console.log("timestamp: "+timestamp);
+   
+   var val=Math.floor(Math.random() * 10);
+   var val1=Math.floor(Math.random() * 10);
   //var val = Math.floor(1000 + Math.random() * 9000);
   //var getId="select Role_Id from login_table where userId= 'Sumesh'"
           con.query("select Role_Id from login_table where userId=?",[req.body.userName], function (err, result) {
@@ -110,10 +74,10 @@ app.post("/verifyApprovalToken",function(req, res) {
             {  
               var str=result[0].Role_Id;
               console.log("approver:"+str);
-              var token= val1+approverMasking+val;
+              var token= approverMasking+val+val1;
               console.log(token);
-              console.log(str+ token);
-              res.send(str+ token);
+              console.log(str+""+token);
+              res.send(str+""+token);
             }
             else{
               res.send(false);
@@ -126,95 +90,6 @@ app.post("/verifyApprovalToken",function(req, res) {
 
 
 
-// app.post("/visitorApproved",function(req, response) {
-  
-//   var getVerifiedToken=tokenVerify(req.body.getToken);
-//   var verifyAgain=tokenVerify(getVerifiedToken);
-//   console.log("getverify"+getVerifiedToken);
-  
-//   if(getVerifiedToken.includes(req.body.escort_id))
-//   {
-//   var getId="select * from VisiterRecord where visitor_empid="+req.body.visitor_id;
-//   con.query(getId,function(err, result)   
-//   { 
-//     console.log(result.length); 
-//   if(err)
-//   {
-//     response.send(false); 
-//   }
-//   else if(result.length>0)
-//   {
-//       con.query('UPDATE VisiterRecord SET approvalStatus= "Approved" WHERE visitor_empid= ?',[req.body.visitor_id],function(err, res)     
-//       {                                                      
-//         if (err)
-//           throw err;
-//           console.log(res);
-//           response.send(true);
-//       });
-//    }
-//   else{
-//     response.send(false);
-
-//     }
-//     });
-//   }
-//   else{
-//     response.send(false);
-
-
-//   }
-//   });
-
-  // app.post("/validateVisitor",function(req, res) {
-  //   console.log(req.body.visitor_id);
-  //   var getId="select * from VisiterRecord where visitor_empid="+req.body.visitor_id;
-  //   con.query(getId, function (err, result) {
-  //     if (err) 
-  //       throw err;
-  //    if(result.length>0)
-  //       {
-  //       res.send(result[0].approvalStatus);
-  //       console.log(result);
-  //       }
-  //   else{
-  //         res.send("null");
-  //       }
-  //   });
-  //   });
-
-    // app.post("/validateEscort",function(req, res) {
-    //   console.log(req.body.escort_id);
-    //   var getId="select * from escort_table where escort_Id="+req.body.escort_id;
-    //   con.query(getId, function (err, result) {
-    //     if (err) 
-    //       throw err;
-    //       console.log(result);
-    //    if(result.length>0 && result[0].IsActive == "Y")
-    //       {
-    //       res.send(true);
-    //       console.log(result);
-    //       }
-    //   else{
-    //         res.send(false);
-    //       }
-    //   });
-    //   });
-
-
-
-    // app.post("/visitorRecord",function(req, res) {
-    //       console.log("enter");
-    //       var getId="select * from VisiterRecord ";
-    //       con.query(getId, function (err, result) {
-    //         if (err) 
-    //           throw err;
-             
-    //           res.send(JSON.stringify(result));
-    //         console.log(result);
-    //       });
-
-
-    //       });
 
     
     app.post("/login",function(req, res) {
@@ -229,12 +104,13 @@ app.post("/verifyApprovalToken",function(req, res) {
             else if(result.length >0)
             { 
               sessionstorage.setItem("userName", req.body.userId);
-              res.render('ApprovalToken', {layout: true});
+              res.render('ApprovalToken', {layout: false});
             }
             else{
+              console.log("error");
               //req.flash('info', 'Flash is back!');
-              res.render('Login', {layout: true});
-
+              res.render('Login', {info:"Invalid username or password!!"});
+              
             }
             console.log(result);
           });
@@ -259,7 +135,7 @@ var mod=0;
 var token="";
 var tempId=id;
 
-while(tempId != 0)
+for(var temp=0; temp < id.length; temp++)
 {
     mod=tempId % 10;
     tempId=tempId/10;
@@ -314,56 +190,7 @@ function approverMasking(token,userName){
 
 }
 
-function tokenVerify(token){
-  var key0="6";
-  var key1="4";
-  var key2="1";
-  var key3="7";
-  var key4="3";
-  var key5="2";
-  var key6="5";
-  var key7="9";
-  var key8="0";
-  var key9="8";
-console.log(token);
-var str = token.replace(/[&\/\\#,+()$~%.'":*@?<>{}]/g, '');
-console.log(str);
-var strArray=[];
-var result="";
-strArray=str.split("");
 
-for(var char=0;char < strArray.length;char++)
-{
-
-var temp="key"+strArray[char];
-
-if(temp == 'key7')
-  result=result+key7;
-else if(temp == "key6")
- result= result+key6; 
- else if(temp == "key5")
- result= result+key5;
- else if(temp == "key4")
- result= result+key4;
- else if(temp == "key3")
- result= result+key3;
- else if(temp == "key2")
- result= result+key2;
- else if(temp == "key1")
- result= result+key1;
- else if(temp == "key0")
- result= result+key0;
- else if(temp == "key8")
- result= result+key8;
- else if(temp == "key9")
- result= result+key9;  
-
-}
-console.log(result.split('').reverse().join(''));
-
-//return result.split('').reverse().join('');
-return result;
-}
 
 
 module.exports=app;
